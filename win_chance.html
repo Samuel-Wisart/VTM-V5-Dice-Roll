@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chance de Vitória - VTM V5</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Chance de Vitória</h1>
+
+        <a href="index.html" class="toggle-button" style="display: inline-block; margin-bottom: 20px; text-decoration: none; text-align: center;">← Voltar ao Rolador</a>
+
+        <div class="input-group">
+            <label>Sua Parada de Dados (Dice Pool): <input type="number" id="playerPool" min="1" value="5"></label>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="winChart"></canvas>
+        </div>
+    </div>
+
+    <script src="win_chance.js"></script>
+</body>
+</html>

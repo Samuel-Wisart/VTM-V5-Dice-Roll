@@ -303,7 +303,7 @@ function displayResults(results) {
         <div class="result-stat"><span>Margem</span><strong>${margin}</strong></div>
     `;
 
-    if (damage > 0) {
+    if (weaponBonus > 0 && damage > 0) {
         resultHTML += `<div class="result-stat damage"><span>Dano Total</span><strong>${damage}</strong></div>`;
     }
 
@@ -473,26 +473,21 @@ function loadSelectedMacro() {
         
         updateDicePool();
     }
-    
-    // Reseta o dropdown para permitir que o usuário selecione a mesma macro novamente no futuro
-    macroSelect.value = ""; 
 }
 
 function deleteSelectedMacro() {
-    // Pede ao usuário para digitar o nome da macro que deseja deletar
-    const name = prompt("Digite o nome EXATO da macro que deseja deletar:");
-    if (!name) return;
+    const name = macroSelect.value;
     
-    let macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    if (!name) {
+        alert("Selecione uma macro no menu primeiro para poder deletá-la.");
+        return;
+    }
     
-    if(macros[name]) {
-        if(confirm(`Tem certeza que deseja deletar a macro "${name}"?`)) {
-            delete macros[name];
-            localStorage.setItem('vtm_macros', JSON.stringify(macros));
-            renderMacros();
-        }
-    } else {
-        alert("Macro não encontrada. Verifique se digitou o nome corretamente.");
+    if (confirm(`Tem certeza que deseja deletar a macro "${name}"?`)) {
+        let macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+        delete macros[name];
+        localStorage.setItem('vtm_macros', JSON.stringify(macros));
+        renderMacros(); // Isso também vai resetar o menu automaticamente
     }
 }
 
