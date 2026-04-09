@@ -22,8 +22,10 @@ const attributeInput = document.getElementById('attribute');
 const skillInput = document.getElementById('skill');
 const advantageInput = document.getElementById('advantage');
 const disciplineCheck = document.getElementById('disciplineCheck');
+const disciplineLabel = document.getElementById('disciplineLabel'); // <--- Linha nova
 const disciplineBonus = document.getElementById('disciplineBonus');
 const bloodSurgeCheck = document.getElementById('bloodSurgeCheck');
+const bloodSurgeLabel = document.getElementById('bloodSurgeLabel'); // <--- Linha nova
 const bloodSurgeBonus = document.getElementById('bloodSurgeBonus');
 const weaponBonusInput = document.getElementById('weaponBonus');
 const difficultyInput = document.getElementById('difficulty');
@@ -49,16 +51,38 @@ function updateBuffs() {
 }
 
 // Update dice pool display
+// Update dice pool display
 function updateDicePool() {
     const attribute = parseInt(attributeInput.value) || 0;
     const skill = parseInt(skillInput.value) || 0;
     const advantage = parseInt(advantageInput.value) || 0;
-    const disciplineBonusVal = disciplineCheck.checked ? bpData[parseInt(bpInput.value) || 0].disciplineBonus : 0;
-    const bloodSurgeBonusVal = bloodSurgeCheck.checked ? bpData[parseInt(bpInput.value) || 0].bloodSurge : 0;
+    
+    // Pega o BP atual para saber os valores corretos
+    const bpValue = parseInt(bpInput.value) || 0;
+    const currentBpData = bpData[bpValue] || bpData[0];
+
+    const disciplineBonusVal = disciplineCheck.checked ? currentBpData.disciplineBonus : 0;
+    const bloodSurgeBonusVal = bloodSurgeCheck.checked ? currentBpData.bloodSurge : 0;
+
+    // Atualiza o TEXTO de dentro dos botões
+    disciplineLabel.textContent = disciplineCheck.checked ? `Discipline (+${currentBpData.disciplineBonus})` : 'Discipline';
+    bloodSurgeLabel.textContent = bloodSurgeCheck.checked ? `Blood Surge (+${currentBpData.bloodSurge})` : 'Blood Surge';
+
     const total = attribute + skill + advantage + disciplineBonusVal + bloodSurgeBonusVal;
     dicePool.value = `Dice Pool Final: ${total}`;
     renderDicePreview(total);
 }
+
+// Event listeners
+bpInput.addEventListener('input', updateBuffs);
+hungerInput.addEventListener('input', updateDicePool);
+attributeInput.addEventListener('input', updateDicePool);
+skillInput.addEventListener('input', updateDicePool);
+advantageInput.addEventListener('input', updateDicePool);
+
+// Como o texto agora muda dentro do updateDicePool, os eventos ficam bem mais simples:
+disciplineCheck.addEventListener('change', updateDicePool);
+bloodSurgeCheck.addEventListener('change', updateDicePool);
 
 function renderDicePreview(totalDice) {
     diceSlots.innerHTML = ''; // Limpa a tela
@@ -102,12 +126,12 @@ attributeInput.addEventListener('input', updateDicePool);
 skillInput.addEventListener('input', updateDicePool);
 advantageInput.addEventListener('input', updateDicePool);
 disciplineCheck.addEventListener('change', () => {
-    disciplineBonus.textContent = disciplineCheck.checked ? `+${bpData[parseInt(bpInput.value) || 0].disciplineBonus} dados` : '';
+    disciplineBonus.textContent = disciplineCheck.checked ? `+${bpData[parseInt(bpInput.value) || 0].disciplineBonus}` : '';
     disciplineBonus.style.display = disciplineCheck.checked ? 'inline' : 'none';
     updateDicePool();
 });
 bloodSurgeCheck.addEventListener('change', () => {
-    bloodSurgeBonus.textContent = bloodSurgeCheck.checked ? `+${bpData[parseInt(bpInput.value) || 0].bloodSurge} dados` : '';
+    bloodSurgeBonus.textContent = bloodSurgeCheck.checked ? `+${bpData[parseInt(bpInput.value) || 0].bloodSurge}` : '';
     bloodSurgeBonus.style.display = bloodSurgeCheck.checked ? 'inline' : 'none';
     updateDicePool();
 });
@@ -243,21 +267,37 @@ function displayResults(results) {
     const weaponBonus = parseInt(weaponBonusInput.value) || 0;
     const damage = margin > 0 ? margin + weaponBonus : 0;
 
-    let resultText = `Sucessos: ${successes} | Margem: ${margin}`;
-    if (damage > 0) resultText += ` | Dano Total: ${damage}`;
-
     const isMessy = critPairs > 0 && hungerCrits > 0;
     const isBestial = margin < 0 && hungerOnes > 0;
 
-    if (margin >= 0) {
-        resultText += ' | Resultado: Sucesso';
-        if (isMessy) resultText += ' com Messy Critical!';
-    } else {
-        resultText += ' | Resultado: Falha';
-        if (isBestial) resultText += ' Bestial!';
+    let resultHTML = `
+        <div class="result-stat"><span>Sucessos</span><strong>${successes}</strong></div>
+        <div class="result-stat"><span>Margem</span><strong>${margin}</strong></div>
+    `;
+
+    if (damage > 0) {
+        resultHTML += `<div class="result-stat damage"><span>Dano Total</span><strong>${damage}</strong></div>`;
     }
 
-    resultsLog.textContent = resultText;
+    let statusClass = "status-success";
+    let statusText = "Sucesso";
+
+    if (margin < 0) {
+        statusClass = "status-fail";
+        statusText = "Falha";
+    }
+
+    if (margin >= 0 && isMessy) {
+        statusClass = "status-messy";
+        statusText = "Sucesso com Messy Critical!";
+    } else if (margin < 0 && isBestial) {
+        statusClass = "status-bestial";
+        statusText = "Falha Bestial!";
+    }
+
+    resultHTML += `<div class="result-status ${statusClass}">${statusText}</div>`;
+
+    resultsLog.innerHTML = resultHTML;
     
     // Libera o botão de rolar assim que os resultados (e as animações) terminam
     rollButton.disabled = false;

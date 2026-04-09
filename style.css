@@ -101,10 +101,101 @@ button:disabled {
     100% { transform: translateY(0); }
 }
 
+/* --- PAINEL DE RESULTADOS --- */
 #resultsLog {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #222;
-    border-radius: 5px;
+    margin-top: 30px;
+    padding: 20px;
+    background: linear-gradient(145deg, #1a1a1a, #222);
+    border: 1px solid #333;
+    border-top: 4px solid #8b0000;
+    border-radius: 8px;
     min-height: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.result-stat {
+    background-color: #111;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 10px 20px;
+    text-align: center;
+    min-width: 90px;
+}
+
+.result-stat span {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.result-stat strong {
+    display: block;
+    font-size: 26px;
+    color: #e0e0e0;
+}
+
+.result-stat.damage {
+    border-color: #8b0000;
+}
+.result-stat.damage strong {
+    color: #ff4444;
+}
+
+.result-status {
+    width: 100%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    padding-top: 15px;
+    margin-top: 5px;
+    border-top: 1px dashed #444;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.status-success { color: #a4ce52; }
+.status-fail { color: #777; }
+.status-messy { color: #ff8c00; text-shadow: 0 0 10px rgba(255, 140, 0, 0.4); }
+.status-bestial { color: #ff0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+
+/* Esconde o checkbox padrão do navegador */
+.hidden-checkbox {
+    display: none; 
+}
+
+/* Estilo do botão quando está DESMARCADO (Cinza/Preto) */
+.toggle-button {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #222; /* Fundo cinza escuro/preto */
+    color: #888; /* Texto acinzentado */
+    border: 2px solid #444;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none; /* Impede que o texto seja selecionado sem querer */
+    transition: all 0.3s ease; /* Animação suave na troca de cor */
+    margin-right: 5px;
+}
+
+/* Efeito ao passar o mouse por cima (Hover) */
+.toggle-button:hover {
+    border-color: #777;
+    color: #ccc;
+}
+
+/* Estilo do botão quando está MARCADO (Vermelho) */
+.hidden-checkbox:checked + .toggle-button {
+    background-color: #8b0000; /* Vermelho sangue escuro */
+    color: #fff; /* Texto branco */
+    border-color: #ff0000; /* Borda vermelho vivo */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.25); /* Leve brilho vermelho */
 }

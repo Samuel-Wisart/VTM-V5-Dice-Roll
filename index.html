@@ -21,10 +21,13 @@
             <label>Atributo: <input type="number" id="attribute" min="0" value="0"></label>
             <label>Skill: <input type="number" id="skill" min="0" value="0"></label>
             <label>Vantagem: <input type="number" id="advantage" min="0" value="0"></label>
-            <label><input type="checkbox" id="disciplineCheck"> Rolagem de Disciplina?</label>
-            <span id="disciplineBonus" style="display:none;">+0 dados</span>
-            <label><input type="checkbox" id="bloodSurgeCheck"> Usar Blood Surge?</label>
-            <span id="bloodSurgeBonus" style="display:none;">+1 dados</span>
+
+            <input type="checkbox" id="disciplineCheck" class="hidden-checkbox">
+            <label for="disciplineCheck" id="disciplineLabel" class="toggle-button">Discipline</label>
+
+            <input type="checkbox" id="bloodSurgeCheck" class="hidden-checkbox">
+            <label for="bloodSurgeCheck" id="bloodSurgeLabel" class="toggle-button">Blood Surge</label>
+
             <div class="spacer"></div>
             <label>Bônus da Arma: <input type="number" id="weaponBonus" min="0" value="0"></label>
             <label>Dificuldade: <input type="number" id="difficulty" min="0" value="0"></label>
