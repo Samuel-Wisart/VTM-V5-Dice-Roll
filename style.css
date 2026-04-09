@@ -200,3 +200,43 @@ button:disabled {
     border-color: #ff0000; /* Borda vermelho vivo */
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.25); /* Leve brilho vermelho */
 }
+
+/* --- MACROS (DROPDOWN COMPACTO) --- */
+.macro-selection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: #1a1a1a;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #333;
+}
+#macroSelect {
+    flex-grow: 1;
+    padding: 5px;
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 3px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* --- PREVISÃO DE PROBABILIDADES --- */
+.probability-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+    background: #111;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #333;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 14px;
+}
+.prob-stat { color: #a4ce52; }
+.prob-stat.messy { color: #ff8c00; }
+.prob-stat.bestial { color: #ff0000; }

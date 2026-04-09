@@ -10,6 +10,14 @@
     <div class="container">
         <h1>Vampiro: A Máscara - Rolagem de Dados V5</h1>
         
+        <div class="row macro-selection">
+            <select id="macroSelect">
+                <option value="">Carregar macro salva...</option>
+            </select>
+            <button id="deleteMacroBtn" style="background-color: #8b0000;">Deletar</button>
+            <button id="saveMacroBtn" style="background-color: #444;">Salvar Macro</button>
+        </div>
+        
         <div class="row">
             <label>Hunger: <input type="number" id="hunger" min="0" max="5" value="0"></label>
             <label>Blood Potency: <input type="number" id="bp" min="0" max="10" value="0"></label>
@@ -40,6 +48,12 @@
         </div>
         
         <div id="diceSlots"></div>
+        
+        <div id="probabilityDisplay" class="probability-container" style="display: none;">
+            <div class="prob-stat">Sucesso: <span id="probSuccess">0%</span></div>
+            <div class="prob-stat messy">Messy Critical: <span id="probMessy">0%</span></div>
+            <div class="prob-stat bestial">Falha Bestial: <span id="probBestial">0%</span></div>
+        </div>
         
         <div id="resultsLog"></div>
     </div>

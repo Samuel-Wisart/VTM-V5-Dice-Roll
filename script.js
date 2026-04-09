@@ -35,6 +35,10 @@ const willpowerButton = document.getElementById('willpowerButton');
 const diceSlots = document.getElementById('diceSlots');
 const resultsLog = document.getElementById('resultsLog');
 
+const saveMacroBtn = document.getElementById('saveMacroBtn');
+const macroSelect = document.getElementById('macroSelect');
+const deleteMacroBtn = document.getElementById('deleteMacroBtn');
+
 // State
 let currentRoll = null;
 let willpowerUsed = false;
@@ -71,6 +75,7 @@ function updateDicePool() {
     const total = attribute + skill + advantage + disciplineBonusVal + bloodSurgeBonusVal;
     dicePool.value = `Dice Pool Final: ${total}`;
     renderDicePreview(total);
+    updateProbabilities(total, parseInt(hungerInput.value) || 0, parseInt(difficultyInput.value) || 0);
 }
 
 // Event listeners
@@ -79,6 +84,8 @@ hungerInput.addEventListener('input', updateDicePool);
 attributeInput.addEventListener('input', updateDicePool);
 skillInput.addEventListener('input', updateDicePool);
 advantageInput.addEventListener('input', updateDicePool);
+weaponBonusInput.addEventListener('input', updateDicePool);
+difficultyInput.addEventListener('input', updateDicePool);
 
 // Como o texto agora muda dentro do updateDicePool, os eventos ficam bem mais simples:
 disciplineCheck.addEventListener('change', updateDicePool);
@@ -271,7 +278,7 @@ function displayResults(results) {
     const critIndices = [...hungerCritIndices, ...normalCritIndices];
 
     const critPairs = Math.floor(crits / 2);
-    successes += critPairs * 3; 
+    successes += critPairs * 2; 
 
     const pairedCritsCount = critPairs * 2;
     for (let i = 0; i < pairedCritsCount; i++) {
@@ -414,5 +421,145 @@ function useWillpower() {
 rollButton.addEventListener('click', rollDice);
 willpowerButton.addEventListener('click', useWillpower);
 
+// --- SISTEMA DE MACROS (LOCALSTORAGE) ---
+
+function saveMacro() {
+    const name = prompt("Digite um nome para a macro (ex: Ataque com Espada):");
+    // Cancela se o usuário fechar o popup ou deixar em branco
+    if (!name || name.trim() === "") return; 
+
+    const macroData = {
+        attribute: attributeInput.value,
+        skill: skillInput.value,
+        advantage: advantageInput.value,
+        weaponBonus: weaponBonusInput.value,
+        disciplineChecked: disciplineCheck.checked,
+        bloodSurgeChecked: bloodSurgeCheck.checked
+    };
+
+    let macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    macros[name.trim()] = macroData;
+    localStorage.setItem('vtm_macros', JSON.stringify(macros));
+    
+    renderMacros();
+}
+
+function renderMacros() {
+    macroSelect.innerHTML = '<option value="">Carregar macro salva...</option>';
+    const macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    
+    for (const name of Object.keys(macros)) {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        macroSelect.appendChild(option);
+    }
+}
+
+function loadSelectedMacro() {
+    const name = macroSelect.value;
+    if (!name) return;
+    
+    const macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    const data = macros[name];
+    
+    if (data) {
+        attributeInput.value = data.attribute;
+        skillInput.value = data.skill;
+        advantageInput.value = data.advantage;
+        weaponBonusInput.value = data.weaponBonus;
+        disciplineCheck.checked = data.disciplineChecked;
+        bloodSurgeCheck.checked = data.bloodSurgeChecked;
+        
+        updateDicePool();
+    }
+    
+    // Reseta o dropdown para permitir que o usuário selecione a mesma macro novamente no futuro
+    macroSelect.value = ""; 
+}
+
+function deleteSelectedMacro() {
+    // Pede ao usuário para digitar o nome da macro que deseja deletar
+    const name = prompt("Digite o nome EXATO da macro que deseja deletar:");
+    if (!name) return;
+    
+    let macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    
+    if(macros[name]) {
+        if(confirm(`Tem certeza que deseja deletar a macro "${name}"?`)) {
+            delete macros[name];
+            localStorage.setItem('vtm_macros', JSON.stringify(macros));
+            renderMacros();
+        }
+    } else {
+        alert("Macro não encontrada. Verifique se digitou o nome corretamente.");
+    }
+}
+
+// Event Listeners das Macros
+saveMacroBtn.addEventListener('click', saveMacro);
+macroSelect.addEventListener('change', loadSelectedMacro); // Autocarregamento
+deleteMacroBtn.addEventListener('click', deleteSelectedMacro);
+
+renderMacros(); // Carrega as macros ao iniciar
+
 // Initialize
 updateBuffs();
+
+// Simulação de Probabilidades (Monte Carlo)
+function updateProbabilities(totalDice, hungerValue, difficulty) {
+    const probContainer = document.getElementById('probabilityDisplay');
+    
+    // Oculta se não houver dados ou dificuldade definida
+    if (totalDice <= 0 || difficulty <= 0) {
+        probContainer.style.display = 'none';
+        return;
+    }
+
+    probContainer.style.display = 'flex';
+    
+    const hungerDice = Math.min(hungerValue, totalDice);
+    const normalDice = totalDice - hungerDice;
+    const simulations = 10000;
+    
+    let successCount = 0;
+    let messyCount = 0;
+    let bestialCount = 0;
+
+    for (let i = 0; i < simulations; i++) {
+        let simSuccesses = 0;
+        let crits = 0;
+        let hungerCrits = 0;
+        let hungerOnes = 0;
+
+        for (let j = 0; j < normalDice; j++) {
+            const val = Math.floor(Math.random() * 10) + 1;
+            if (val >= 6 && val <= 9) simSuccesses++;
+            else if (val === 10) { simSuccesses++; crits++; }
+        }
+        for (let j = 0; j < hungerDice; j++) {
+            const val = Math.floor(Math.random() * 10) + 1;
+            if (val >= 6 && val <= 9) simSuccesses++;
+            else if (val === 10) { simSuccesses++; crits++; hungerCrits++; }
+            else if (val === 1) hungerOnes++;
+        }
+
+        const critPairs = Math.floor(crits / 2);
+        simSuccesses += critPairs * 2; 
+
+        const margin = simSuccesses - difficulty;
+        const isMessy = critPairs > 0 && hungerCrits > 0;
+        const isBestial = margin < 0 && hungerOnes > 0;
+
+        if (margin >= 0) {
+            successCount++;
+            if (isMessy) messyCount++;
+        } else {
+            if (isBestial) bestialCount++;
+        }
+    }
+
+    document.getElementById('probSuccess').textContent = ((successCount / simulations) * 100).toFixed(1) + '%';
+    document.getElementById('probMessy').textContent = ((messyCount / simulations) * 100).toFixed(1) + '%';
+    document.getElementById('probBestial').textContent = ((bestialCount / simulations) * 100).toFixed(1) + '%';
+}
