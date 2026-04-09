@@ -165,6 +165,7 @@ button:disabled {
 .status-fail { color: #777; }
 .status-messy { color: #ff8c00; text-shadow: 0 0 10px rgba(255, 140, 0, 0.4); }
 .status-bestial { color: #ff0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.8); }
+.status-tie { color: #f1c40f; text-shadow: 0 0 8px rgba(241, 196, 15, 0.4); }
 
 /* Esconde o checkbox padrão do navegador */
 .hidden-checkbox {

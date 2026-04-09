@@ -246,20 +246,41 @@ function displayResults(results) {
     let crits = 0;
     let hungerCrits = 0;
     let hungerOnes = 0;
+    
+    // Separa os índices para priorizar os dados de fome
+    let hungerCritIndices = [];
+    let normalCritIndices = [];
 
-    results.forEach(result => {
+    results.forEach((result, index) => {
         if (result.value >= 6 && result.value <= 9) {
             successes += 1;
         } else if (result.value === 10) {
             successes += 1;
             crits += 1;
-            if (result.type === 'hunger') hungerCrits += 1;
+            if (result.type === 'hunger') {
+                hungerCrits += 1;
+                hungerCritIndices.push(index);
+            } else {
+                normalCritIndices.push(index);
+            }
         }
         if (result.type === 'hunger' && result.value === 1) hungerOnes += 1;
     });
 
+    // Junta as listas, colocando os dados de fome sempre na frente
+    const critIndices = [...hungerCritIndices, ...normalCritIndices];
+
     const critPairs = Math.floor(crits / 2);
     successes += critPairs * 3; 
+
+    const pairedCritsCount = critPairs * 2;
+    for (let i = 0; i < pairedCritsCount; i++) {
+        diceSlots.children[critIndices[i]].style.border = '2px solid #ff0000';
+    }
+    // Garantir que os outros tenham borda transparente
+    for (let i = pairedCritsCount; i < critIndices.length; i++) {
+        diceSlots.children[critIndices[i]].style.border = '2px solid transparent';
+    } 
 
     const parsedDiff = parseInt(difficultyInput.value);
     const difficulty = isNaN(parsedDiff) ? 0 : parsedDiff;
@@ -279,20 +300,30 @@ function displayResults(results) {
         resultHTML += `<div class="result-stat damage"><span>Dano Total</span><strong>${damage}</strong></div>`;
     }
 
-    let statusClass = "status-success";
-    let statusText = "Sucesso";
+    let statusClass = "";
+    let statusText = "";
 
-    if (margin < 0) {
+    if (margin > 0) {
+        statusClass = "status-success";
+        statusText = "Sucesso";
+        if (isMessy) {
+            statusClass = "status-messy";
+            statusText = "Sucesso com Messy Critical!";
+        }
+    } else if (margin === 0) {
+        statusClass = "status-tie";
+        statusText = "Empate";
+        if (isMessy) {
+            statusClass = "status-messy";
+            statusText = "Empate com Messy Critical!";
+        }
+    } else {
         statusClass = "status-fail";
         statusText = "Falha";
-    }
-
-    if (margin >= 0 && isMessy) {
-        statusClass = "status-messy";
-        statusText = "Sucesso com Messy Critical!";
-    } else if (margin < 0 && isBestial) {
-        statusClass = "status-bestial";
-        statusText = "Falha Bestial!";
+        if (isBestial) {
+            statusClass = "status-bestial";
+            statusText = "Falha Bestial!";
+        }
     }
 
     resultHTML += `<div class="result-status ${statusClass}">${statusText}</div>`;
@@ -319,7 +350,7 @@ function useWillpower() {
         
         selectedWillpowerDice = [];
         willpowerButton.textContent = "Confirmar Rerolagem";
-        resultsLog.textContent += " | CLIQUE nos dados para rerolar (máx 3).";
+        resultsLog.innerHTML += '<div class="result-status" style="color: #ff8800; font-size: 16px; border-top: none; margin-top: 10px;">CLIQUE nos dados na tela para rerolar (máx 3).</div>';
 
         diceSlots.querySelectorAll('.dice-slot').forEach((slot, index) => {
             if (currentRoll[index].type === 'normal' && currentRoll[index].value !== 10) {
@@ -339,8 +370,21 @@ function useWillpower() {
         });
     } else {
         if (selectedWillpowerDice.length === 0) {
-             alert("Selecione pelo menos um dado para rerolar ou recarregue a página se não quiser usar Willpower.");
-             return;
+            // Cancela a Força de Vontade e reseta a interface para o estado original
+            isWillpowerSelectionMode = false;
+
+            // Limpa os estilos e eventos de clique dos dados
+            diceSlots.querySelectorAll('.dice-slot').forEach(slot => {
+                slot.onclick = null;
+                slot.style.cursor = 'default';
+                slot.style.border = '2px solid transparent'; 
+            });
+
+            willpowerButton.textContent = "Força de Vontade";
+            
+            // Recalcula e restaura a interface (Log de resultados e bordas de críticos)
+            displayResults(currentRoll); 
+            return;
         }
 
         selectedWillpowerDice.forEach(index => {
@@ -357,6 +401,8 @@ function useWillpower() {
         isWillpowerSelectionMode = false;
         willpowerButton.textContent = "Força de Vontade";
         willpowerButton.disabled = true;
+
+        resultsLog.innerHTML = '<div class="result-status" style="color: #888;">Rerolando Força de Vontade...</div>';
 
         // O rollButton.disabled = false vai acontecer automaticamente lá na função displayResults 
         // assim que a animação desses dados selecionados terminar!
