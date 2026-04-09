@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VTM Dice Roller - V5</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Vampiro: A Máscara - Rolagem de Dados V5</h1>
+        
+        <div class="row">
+            <label>Hunger: <input type="number" id="hunger" min="0" max="5" value="0"></label>
+            <label>Blood Potency: <input type="number" id="bp" min="0" max="10" value="0"></label>
+            <input type="text" id="disciplineBuff" readonly value="Buff de Disciplina: +0">
+            <input type="text" id="bloodSurgeBuff" readonly value="Blood Surge: +1">
+        </div>
+        
+        <div class="row">
+            <label>Atributo: <input type="number" id="attribute" min="0" value="0"></label>
+            <label>Skill: <input type="number" id="skill" min="0" value="0"></label>
+            <label>Vantagem: <input type="number" id="advantage" min="0" value="0"></label>
+            <label><input type="checkbox" id="disciplineCheck"> Rolagem de Disciplina?</label>
+            <span id="disciplineBonus" style="display:none;">+0 dados</span>
+            <label><input type="checkbox" id="bloodSurgeCheck"> Usar Blood Surge?</label>
+            <span id="bloodSurgeBonus" style="display:none;">+1 dados</span>
+            <div class="spacer"></div>
+            <label>Bônus da Arma: <input type="number" id="weaponBonus" min="0" value="0"></label>
+            <label>Dificuldade: <input type="number" id="difficulty" min="0" value="0"></label>
+        </div>
+        
+        <div class="row">
+            <input type="text" id="dicePool" readonly value="Dice Pool Final: 0">
+            <button id="rollButton">ROLAR</button>
+            <button id="willpowerButton" disabled>Força de Vontade</button>
+        </div>
+        
+        <div id="diceSlots"></div>
+        
+        <div id="resultsLog"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

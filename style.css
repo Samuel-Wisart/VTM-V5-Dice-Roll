@@ -1,0 +1,110 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.row label {
+    margin-right: 10px;
+}
+
+.row input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 3px;
+}
+
+.row input[type="text"] {
+    padding: 5px;
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    border-radius: 3px;
+    min-width: 150px;
+}
+
+.row input[readonly] {
+    background-color: #222;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+#diceSlots {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.dice-slot {
+    width: 50px;
+    height: 50px;
+    margin: 5px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.dice-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dice-slot.rolling {
+    animation: roll 1.5s ease-out;
+}
+
+@keyframes roll {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0); }
+}
+
+#resultsLog {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #222;
+    border-radius: 5px;
+    min-height: 50px;
+}
