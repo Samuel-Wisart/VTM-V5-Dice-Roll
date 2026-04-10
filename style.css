@@ -4,11 +4,13 @@ body {
     color: #e0e0e0;
     margin: 0;
     padding: 20px;
+    zoom: 1.1; /* Força o zoom padrão de 110% */
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
 }
 
 h1 {
@@ -240,3 +242,104 @@ button:disabled {
 .prob-stat { color: #a4ce52; }
 .prob-stat.messy { color: #ff8c00; }
 .prob-stat.bestial { color: #ff0000; }
+
+/* --- TEMA STEAMPUNK --- */
+body.steampunk {
+    background-color: #1e1511;
+    color: #d4c4b7;
+}
+body.steampunk h1 {
+    color: #c5832b;
+    text-shadow: 0 0 10px rgba(197, 131, 43, 0.5);
+}
+body.steampunk button {
+    background-color: #8c5a24;
+}
+body.steampunk button:disabled {
+    background-color: #555;
+}
+body.steampunk .hidden-checkbox:checked + .toggle-button {
+    background-color: #8c5a24;
+    border-color: #c5832b;
+    box-shadow: 0 0 10px rgba(197, 131, 43, 0.4);
+}
+body.steampunk #resultsLog {
+    border-top: 4px solid #c5832b;
+}
+body.steampunk .result-stat.damage {
+    border-color: #c5832b;
+}
+body.steampunk .result-stat.damage strong {
+    color: #e6a855;
+}
+body.steampunk .status-bestial {
+    color: #c5832b;
+    text-shadow: 0 0 15px rgba(197, 131, 43, 0.8);
+}
+
+.rouse-widget {
+    position: absolute;
+    right: -210px; 
+    top: 60px;   
+    width: 200px;
+    height: 310px; /* Seu tamanho perfeito */
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px 15px; /* Espaçamento interno ajustado */
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    z-index: 90;
+    
+    /* Flexbox para distribuir o conteúdo harmoniosamente */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.rouse-widget h3 {
+    font-size: 18px; /* Título maior */
+    margin: 0;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Aumenta o tamanho EXCLUSIVO do dado dentro do widget */
+.rouse-widget .dice-slot {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 !important;
+}
+
+.rouse-text {
+    font-size: 16px; /* Texto de resultado mais legível */
+    font-weight: bold;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Aumenta o botão e fixa ele na base */
+#manualRouseBtn {
+    width: 100% !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    padding: 12px !important;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+/* Ajuste de responsividade para celulares e tablets pequenos */
+@media (max-width: 900px) {
+    .rouse-widget { 
+        position: static; 
+        width: 100%; 
+        height: auto; /* Deixa o conteúdo ditar a altura no celular */
+        margin-top: 20px; 
+        margin-bottom: 20px;
+    }
+}

@@ -8,9 +8,21 @@
 </head>
 <body>
     <div class="container">
+    <div id="rouseCheckWidget" class="rouse-widget">
+        <h3>Teste de Fome</h3>
+        <div id="rouseDiceSlot" class="dice-slot" style="margin: 10px auto;">
+            <img id="rouseDiceImg" src="images_vampire/normal_fail.png" alt="Dado">
+        </div>
+        <div id="rouseResultText" class="rouse-text">-</div>
+        <button id="manualRouseBtn" style="width: 100%; margin: 10px 0 0 0; font-size: 12px; padding: 5px;">Rolar Manual</button>
+    </div>
         <h1>Vampiro: A Máscara - Rolagem de Dados V5</h1>
         
-        <a href="win_chance.html" class="toggle-button" style="position: absolute; top: 20px; right: 20px; text-decoration: none; background-color: #222; color: #888; padding: 8px 12px; font-size: 12px; border: 1px solid #444; border-radius: 5px; transition: 0.3s;">Chance de Vitória</a>
+        <div style="position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 1000;">
+            <button id="themeToggleBtn" class="toggle-button" style="background-color: #222; color: #888; padding: 8px 12px; font-size: 12px; border: 1px solid #444; border-radius: 5px; transition: 0.3s; cursor: pointer;">⚙️ Tema: Steampunk</button>
+            
+            <a href="win_chance.html" class="toggle-button" style="text-decoration: none; background-color: #222; color: #888; padding: 8px 12px; font-size: 12px; border: 1px solid #444; border-radius: 5px; transition: 0.3s;">📊 Chance de Vitória</a>
+        </div>
 
         <div class="row macro-selection">
             <select id="macroSelect">

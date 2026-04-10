@@ -39,6 +39,60 @@ const saveMacroBtn = document.getElementById('saveMacroBtn');
 const macroSelect = document.getElementById('macroSelect');
 const deleteMacroBtn = document.getElementById('deleteMacroBtn');
 
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+let activeTheme = 'vampire';
+
+themeToggleBtn.addEventListener('click', () => {
+    if (activeTheme === 'vampire') {
+        activeTheme = 'steampunk';
+        document.body.classList.add('steampunk');
+        themeToggleBtn.textContent = '🦇 Tema: Vampiro';
+        // Troca a pasta da imagem do rouse check atual
+        rouseDiceImg.src = rouseDiceImg.src.replace('images_vampire', 'images_robot');
+    } else {
+        activeTheme = 'vampire';
+        document.body.classList.remove('steampunk');
+        themeToggleBtn.textContent = '⚙️ Tema: Steampunk';
+        // Retorna a pasta da imagem para vampiro
+        rouseDiceImg.src = rouseDiceImg.src.replace('images_robot', 'images_vampire');
+    }
+    updateDicePool(); // Atualiza a preview dos dados na hora
+});
+
+const rouseDiceImg = document.getElementById('rouseDiceImg');
+const rouseResultText = document.getElementById('rouseResultText');
+const manualRouseBtn = document.getElementById('manualRouseBtn');
+
+function rollRouseCheck() {
+    rouseResultText.textContent = "Rolando...";
+    rouseResultText.className = "rouse-text";
+    
+    let cycles = 0;
+    const maxCycles = 10;
+    const value = Math.floor(Math.random() * 10) + 1;
+    const type = 'hunger'; 
+    
+    const interval = setInterval(() => {
+        rouseDiceImg.src = getRandomDiceImage(type);
+        cycles++;
+        
+        if (cycles >= maxCycles) {
+            clearInterval(interval);
+            rouseDiceImg.src = getDiceImage(type, value);
+            
+            if (value >= 6) {
+                rouseResultText.innerHTML = "Sucesso!<br>(Fome mantida)";
+                rouseResultText.style.color = "#a4ce52";
+            } else {
+                rouseResultText.innerHTML = "Falha!<br>(+1 Fome)";
+                rouseResultText.style.color = "#ff4444";
+            }
+        }
+    }, 80);
+}
+
+manualRouseBtn.addEventListener('click', rollRouseCheck);
+
 // State
 let currentRoll = null;
 let willpowerUsed = false;
@@ -170,6 +224,15 @@ function rollDice() {
 
     currentRoll = results;
     
+    // GATILHO DO ROUSE CHECK: Dispara se marcado, reseta se desmarcado
+    if (bloodSurgeCheck.checked) {
+        rollRouseCheck();
+    } else {
+        // Limpa o texto e a cor para não confundir o jogador na rolagem atual
+        rouseResultText.innerHTML = "-";
+        rouseResultText.style.color = ""; 
+    }
+    
     // Reseta estado do Willpower
     willpowerUsed = false;
     isWillpowerSelectionMode = false;
@@ -227,15 +290,16 @@ function startSlotAnimation(imgElement, type, finalValue, isLast, allResults) {
 
 // Get dice image
 function getDiceImage(type, value) {
+    const imagesFolder = activeTheme === 'vampire' ? 'images_vampire/' : 'images_robot/';
     if (type === 'normal') {
-        if (value <= 5) return 'images/normal_fail.png';
-        if (value <= 9) return 'images/normal_success.png';
-        return 'images/normal_crit.png';
+        if (value <= 5) return `${imagesFolder}normal_fail.png`;
+        if (value <= 9) return `${imagesFolder}normal_success.png`;
+        return `${imagesFolder}normal_crit.png`;
     } else {
-        if (value === 1) return 'images/hunger_bestial.png';
-        if (value <= 5) return 'images/hunger_fail.png';
-        if (value <= 9) return 'images/hunger_success.png';
-        return 'images/hunger_messy.png';
+        if (value === 1) return `${imagesFolder}hunger_bestial.png`;
+        if (value <= 5) return `${imagesFolder}hunger_fail.png`;
+        if (value <= 9) return `${imagesFolder}hunger_success.png`;
+        return `${imagesFolder}hunger_messy.png`;
     }
 }
 
@@ -281,8 +345,10 @@ function displayResults(results) {
     successes += critPairs * 2; 
 
     const pairedCritsCount = critPairs * 2;
+    const critColor = activeTheme === 'steampunk' ? '#c5832b' : '#ff0000'; 
+    
     for (let i = 0; i < pairedCritsCount; i++) {
-        diceSlots.children[critIndices[i]].style.border = '2px solid #ff0000';
+        diceSlots.children[critIndices[i]].style.border = `2px solid ${critColor}`;
     }
     // Garantir que os outros tenham borda transparente
     for (let i = pairedCritsCount; i < critIndices.length; i++) {
@@ -429,6 +495,7 @@ function saveMacro() {
     if (!name || name.trim() === "") return; 
 
     const macroData = {
+        bp: bpInput.value, // <--- Nova linha adicionada
         attribute: attributeInput.value,
         skill: skillInput.value,
         advantage: advantageInput.value,
@@ -446,13 +513,30 @@ function saveMacro() {
 
 function renderMacros() {
     macroSelect.innerHTML = '<option value="">Carregar macro salva...</option>';
-    const macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
     
-    for (const name of Object.keys(macros)) {
+    // Grupo de Macros Padrão
+    const groupDefault = document.createElement('optgroup');
+    groupDefault.label = "--- MACROS PADRÃO ---";
+    for (const name of Object.keys(defaultMacros)) {
         const option = document.createElement('option');
         option.value = name;
         option.textContent = name;
-        macroSelect.appendChild(option);
+        groupDefault.appendChild(option);
+    }
+    macroSelect.appendChild(groupDefault);
+
+    // Grupo de Macros do Usuário
+    const userMacros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    if (Object.keys(userMacros).length > 0) {
+        const groupUser = document.createElement('optgroup');
+        groupUser.label = "--- MINHAS MACROS ---";
+        for (const name of Object.keys(userMacros)) {
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            groupUser.appendChild(option);
+        }
+        macroSelect.appendChild(groupUser);
     }
 }
 
@@ -460,10 +544,12 @@ function loadSelectedMacro() {
     const name = macroSelect.value;
     if (!name) return;
     
-    const macros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
-    const data = macros[name];
+    const userMacros = JSON.parse(localStorage.getItem('vtm_macros')) || {};
+    // Busca primeiro nas do usuário; se não achar, busca nas padrão
+    const data = userMacros[name] || defaultMacros[name];
     
     if (data) {
+        bpInput.value = data.bp || 0; 
         attributeInput.value = data.attribute;
         skillInput.value = data.skill;
         advantageInput.value = data.advantage;
@@ -471,6 +557,7 @@ function loadSelectedMacro() {
         disciplineCheck.checked = data.disciplineChecked;
         bloodSurgeCheck.checked = data.bloodSurgeChecked;
         
+        updateBuffs();
         updateDicePool();
     }
 }
@@ -480,6 +567,11 @@ function deleteSelectedMacro() {
     
     if (!name) {
         alert("Selecione uma macro no menu primeiro para poder deletá-la.");
+        return;
+    }
+    
+    if (defaultMacros[name]) {
+        alert("Você não pode deletar uma macro padrão do sistema.");
         return;
     }
     
@@ -495,6 +587,16 @@ function deleteSelectedMacro() {
 saveMacroBtn.addEventListener('click', saveMacro);
 macroSelect.addEventListener('change', loadSelectedMacro); // Autocarregamento
 deleteMacroBtn.addEventListener('click', deleteSelectedMacro);
+
+const defaultMacros = {
+    "Magna Lança": { bp: 2, attribute: 3, skill: 3, advantage: 1, weaponBonus: 3, disciplineChecked: false, bloodSurgeChecked: false },
+    "Magna Scorpion's Touch": { bp: 2, attribute: 3, skill: 3, advantage: 0, weaponBonus: 0, disciplineChecked: true, bloodSurgeChecked: false },
+    "Charles Dodge (Fleetness)": { bp: 2, attribute: 3, skill: 3, advantage: 3, weaponBonus: 0, disciplineChecked: true, bloodSurgeChecked: false },
+    "Charles Dodge": { bp: 2, attribute: 3, skill: 3, advantage: 0, weaponBonus: 0, disciplineChecked: false, bloodSurgeChecked: false },
+    "Charles Brawl": { bp: 2, attribute: 4, skill: 4, advantage: 0, weaponBonus: 4, disciplineChecked: false, bloodSurgeChecked: false },
+    "Magna Premonition": { bp: 2, attribute: 3, skill: 2, advantage: 0, weaponBonus: 0, disciplineChecked: true, bloodSurgeChecked: false },
+    "Axel Firearms": { bp: 2, attribute: 5, skill: 3, advantage: 0, weaponBonus: 4, disciplineChecked: false, bloodSurgeChecked: false }
+};
 
 renderMacros(); // Carrega as macros ao iniciar
 
