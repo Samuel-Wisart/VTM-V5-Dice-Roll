@@ -377,8 +377,9 @@ body.steampunk .status-bestial {
 
 /* Cor do texto dos botões inativos no tema Steampunk */
 body.steampunk .diff-btn {
-    color: #ccc;
-    border: 2px solid #888;
+    color: #fff;
+    border: 2px solid #c5832b;
+    background-color: #222;
 }
 
 body.steampunk .diff-btn.active {
