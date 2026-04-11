@@ -343,3 +343,46 @@ body.steampunk .status-bestial {
         margin-bottom: 20px;
     }
 }
+
+/* --- BOTÕES DE DIFICULDADE --- */
+.diff-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #222;
+    color: #888;
+    border: 2px solid #444;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+.diff-btn:hover {
+    border-color: #777;
+    color: #ccc;
+}
+.diff-btn.active {
+    background-color: #8b0000;
+    color: #fff;
+    border-color: #ff0000;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+}
+
+/* Suporte ao Tema Steampunk para os botões */
+
+/* Cor do texto dos botões inativos no tema Steampunk */
+body.steampunk .diff-btn {
+    color: #ccc;
+    border: 2px solid #888;
+}
+
+body.steampunk .diff-btn.active {
+    background-color: #8c5a24;
+    border-color: #c5832b;
+    box-shadow: 0 0 8px rgba(197, 131, 43, 0.4);
+}

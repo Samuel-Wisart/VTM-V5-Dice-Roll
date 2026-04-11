@@ -39,6 +39,8 @@ const saveMacroBtn = document.getElementById('saveMacroBtn');
 const macroSelect = document.getElementById('macroSelect');
 const deleteMacroBtn = document.getElementById('deleteMacroBtn');
 
+const diffButtons = document.querySelectorAll('.diff-btn');
+
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 let activeTheme = 'vampire';
 
@@ -139,7 +141,19 @@ attributeInput.addEventListener('input', updateDicePool);
 skillInput.addEventListener('input', updateDicePool);
 advantageInput.addEventListener('input', updateDicePool);
 weaponBonusInput.addEventListener('input', updateDicePool);
-difficultyInput.addEventListener('input', updateDicePool);
+
+diffButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        // Remove a classe 'active' de todos os botões
+        diffButtons.forEach(b => b.classList.remove('active'));
+        // Adiciona 'active' no botão clicado
+        e.currentTarget.classList.add('active');
+        // Atualiza o valor do input escondido
+        difficultyInput.value = e.currentTarget.getAttribute('data-val');
+        // Atualiza a matemática do site
+        updateDicePool();
+    });
+});
 
 // Como o texto agora muda dentro do updateDicePool, os eventos ficam bem mais simples:
 disciplineCheck.addEventListener('change', updateDicePool);
